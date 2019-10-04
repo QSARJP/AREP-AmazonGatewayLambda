@@ -5,53 +5,41 @@
     <artifactId>AWSLambdaGateway</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
-    <properties>
-        <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
-    </properties>
-  <dependencies>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.8.1</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.sparkjava</groupId>
-      <artifactId>spark-core</artifactId>
-      <version>2.9.1</version>
-    </dependency>
+    <dependencies>
+      <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>3.8.1</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+          <groupId>com.sparkjava</groupId>
+          <artifactId>spark-core</artifactId>
+          <version>2.7.2</version>
+      </dependency>
+        <dependency>
+         <groupId>org.slf4j</groupId>
+         <artifactId>slf4j-api</artifactId>
+         <version>1.7.5</version>
+     </dependency>
+     <dependency>
+         <groupId>org.slf4j</groupId>
+         <artifactId>slf4j-log4j12</artifactId>
+         <version>1.7.5</version>
+     </dependency>
+    </dependencies>
     
-  </dependencies>
-  
-  <build>
-    <plugins>
-      <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.1</version>
-          <configuration>
-            <source>1.8</source>
-            <target>1.8</target>
-            <compilerArguments>
-              <endorseddirs>${endorsed.dir}</endorseddirs>
-            </compilerArguments>
-          </configuration>
-        </plugin>
-        <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-dependency-plugin</artifactId>
-            <version>3.0.1</version>
-            <executions>
-              <execution>
-                <id>copy-dependencies</id>
-                  <phase>package</phase>
-                  <goals><goal>copy-dependencies</goal></goals>
-              </execution>
-            </executions>
-        </plugin>
+     <build>
+      <plugins>
+          <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-compiler-plugin</artifactId>
+              <version>3.3</version>
+              <configuration>
+                  <source>1.8</source>
+                  <target>1.8</target>
+              </configuration>    
+          </plugin>
           <plugin>
             <!-- Build an executable JAR -->
             <groupId>org.apache.maven.plugins</groupId>
@@ -68,36 +56,40 @@
             </configuration>
           </plugin>
           <plugin>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>single</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <descriptorRefs>
-            <descriptorRef>jar-with-dependencies</descriptorRef>
-          </descriptorRefs>
-        </configuration>
-      </plugin>
-        </plugins>
-
-  </build>
-  <reporting>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <version>3.1.1</version>
-        <configuration>
-          <stylesheetfile>${basedir}/src/main/javadoc/stylesheet.css</stylesheetfile>
-          <show>public</show>
-        </configuration>
-      </plugin>
+                  <groupId>org.apache.maven.plugins</groupId>
+                     <artifactId>maven-shade-plugin</artifactId>
+                     <version>2.4.3</version>
+                     <configuration>
+                         <filters>
+                             <filter>
+                                 <artifact>*:*</artifact>
+                                 <excludes>
+                                     <exclude>META-INF/*.SF</exclude>
+                                     <exclude>META-INF/*.DSA</exclude>
+                                     <exclude>META-INF/*.RSA</exclude>
+                                 </excludes>
+                             </filter>
+                         </filters>
+                         <!-- Additional configuration. -->
+                     </configuration>
+                     <executions>
+                         <!-- Run shade goal on package phase -->
+                         <execution>
+                             <phase>package</phase>
+                             <goals>
+                                 <goal>shade</goal>
+                             </goals>
+                             <configuration>
+                                 <transformers>
+                                     <!-- add Main-Class to manifest file -->
+                                     <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                         <mainClass>edu.eci.arep.awslambdagateway.services.SparkWebApp</mainClass>
+                                     </transformer>
+                                 </transformers>
+                             </configuration>
+                         </execution>
+                     </executions>
+          </plugin>
     </plugins>
-  </reporting>
-
-</project>
+    </build>
+  </project>
